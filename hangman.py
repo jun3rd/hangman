@@ -1,49 +1,55 @@
+# hangman.py
+
 import random
-from words import words
+from words_for_hangman import words
 import string
 
 def get_valid_word(words):
-    word = random.choice(words)  # randomly chooses word from word_list
-    while '_' in word or ' ' in word:
+    word = random.choice(words)
+    while '-' in word or ' ' in word:
         word = random.choice(words)
     return word.upper()
 
 def hangman():
     word = get_valid_word(words)
-    word_letters = set(word)  # letters in the word
-    print(f'set: {word_letters}')
+    # below used for debugging:
+    # print(f"word: {word}")
+    word_letters = set(word)
+    # below used for debugging:
+    # print(word_letters)
     alphabet = set(string.ascii_uppercase)
-    used_letters = set()  # what the user has guessed
+    used_letters = set()
 
-    # getting user input
-    while len(word_letters) > 0:
-        print(f'word: {word}')
-        # letters used
-        # ' '.join(['a', 'b', 'cd']) --> 'a b cd'
-        print('You have used these letters: ', ' '.join(used_letters))
+    lives = len(word_letters)
 
-        # what current word is (ie W - R D)
+    while len(word_letters) > 0 and lives > 0:
+        print(f"\n{lives} lives left. You guessed:", " ".join(used_letters))
+
+        # current guess status
         word_list = [letter if letter in used_letters else '-' for letter in word]
-        print('Current word: ', ' '.join(word_list))
+        print(f"word: ", " ".join(word_list))
+        user_letter = input("guess? ").upper()
 
-        user_letter = input("guess a letter: ").upper()
         if user_letter in alphabet - used_letters:
             used_letters.add(user_letter)
             if user_letter in word_letters:
                 word_letters.remove(user_letter)
-
+            else:
+                lives = lives - 1
+                # below used for debugging:
+                # print(f"{user_letter} NOT in {word}")
+                print(f"{user_letter} - wrong!")
         elif user_letter in used_letters:
-            print("you have used that character before. ")
-
+            print("already used")
         else:
-            print('Invalid character')
+            print("invalid")
+    if lives == 0:
+        print(f"Sorry, your word was: {word}")
+    else:
+        word_list = [letter if letter in used_letters else '-' for letter in word]
+        print(f"word: ", " ".join(word_list))
+        print(f"You win!")
 
-    # gets here when len(word_letters == 0)
-    print(f'word: {word}')
-    print('you win!!!')
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     hangman()
-
 
